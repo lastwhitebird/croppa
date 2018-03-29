@@ -92,13 +92,21 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
         }
 
         // Listen for Cropa style URLs, these are how Croppa gets triggered
+        $patterns=(array)($this->app['Bkwld\Croppa\URL']->routePattern());
+        file_put_contents(storage_path('croppa_log'),print_r($patterns, true));
+        
         if ($this->version() > 0) { // Laravel
-            $this->app['router']
-                ->get('{path}', 'Bkwld\Croppa\Handler@handle')
-                ->where('path', $this->app['Bkwld\Croppa\URL']->routePattern());
+        	foreach ($patterns as $i=>$pattern)
+        	{
+        		$this->app['router']
+	                ->get("{path$i}", ['uses'=>'Bkwld\Croppa\Handler@handle', 'as'=>'Croppa'.$i])
+	                ->where("path$i", $pattern);
+        	}
+        	//dd($this->app['router']);
         } else { // Lumen
-            $this->app->get('{path:'.$this->app['Bkwld\Croppa\URL']->routePattern().'}', [
-                'uses' => 'Bkwld\Croppa\Handler@handle',
+        	foreach ($patterns as $pattern)
+        		$this->app->get('{path:'.$pattern.'}', [
+                	'uses' => 'Bkwld\Croppa\Handler@handle',
             ]);
         }
     }

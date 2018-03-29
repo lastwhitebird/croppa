@@ -29,6 +29,10 @@ class URL {
         $this->config = $config;
     }
 
+    public function setConfig($config = []) {
+    	$this->config = $config;
+    }
+    
     /**
      * Insert Croppa parameter suffixes into a URL.  For use as a helper in views
      * when rendering image src attributes.
@@ -129,7 +133,13 @@ class URL {
      * @return string
      */
     public function routePattern() {
-        return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN);
+    	$normalize=function($val)
+    	{
+    		return sprintf("(?=%s)(?=%s).+", $val, self::PATTERN);
+    	};
+    	if (!is_array($this->config['path']))
+        	return sprintf("(?=%s)(?=%s).+", $this->config['path'], self::PATTERN);
+        else return array_map($normalize,$this->config['path']);
     }
 
     /**

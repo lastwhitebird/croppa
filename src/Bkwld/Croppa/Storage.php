@@ -42,6 +42,10 @@ class Storage {
         $this->config = $config;
     }
 
+    public function setConfig($config = []) {
+    	$this->config = $config;
+    }
+    
     /**
      * Factory function to create an instance and then "mount" disks
      *

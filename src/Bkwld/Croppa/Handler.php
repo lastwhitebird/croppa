@@ -40,15 +40,35 @@ class Handler extends Controller {
         $this->storage = $storage;
         $this->request = $request;
         $this->config = $config;
-    }
+	}
 
-    /**
-     * Handles a Croppa style route
-     *
-     * @param string $request The `Request::path()`
-     * @throws Exception
-     * @return Symfony\Component\HttpFoundation\StreamedResponse
-     */
+	/**
+	 * Handles a Croppa style route
+	 *
+	 * @param string $request
+	 *        	The `Request::path()`
+	 * @throws Exception
+	 * @return Symfony\Component\HttpFoundation\StreamedResponse
+	 */
+	private function updateConfigs($request)
+	{
+		if (!is_array($this->config['path']))
+			return;
+		$indexfound = 0;
+		foreach ($this->config['path'] as $i => $path)
+			if (preg_match('#' . $path . '#', $request))
+			{
+				$indexfound = $i;
+				break;
+			}
+		file_put_contents(storage_path('croppa_log'),print_r($request, true).'#'.print_r($indexfound , true));
+		$this->config['path']=$this->config['path'][$indexfound];
+    	$this->config['src_dir']=$this->config['src_dir'][$indexfound];
+    	$this->config['crops_dir']=$this->config['crops_dir'][$indexfound];
+    	\App::make('Bkwld\Croppa\Storage')->setConfig($this->config);
+    	\App::make('Bkwld\Croppa\URL')->setConfig($this->config);
+	}
+    
     public function handle($request) {
 
         // Validate the signing token
@@ -57,7 +77,8 @@ class Handler extends Controller {
         ) {
             throw new NotFoundHttpException('Token mismatch');
         }
-
+        
+        $this->updateConfigs($request);
         // Create the image file
         $crop_path = $this->render($request);
 
