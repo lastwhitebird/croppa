@@ -93,7 +93,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider {
 
         // Listen for Cropa style URLs, these are how Croppa gets triggered
         $patterns=(array)($this->app['Bkwld\Croppa\URL']->routePattern());
-        file_put_contents(storage_path('croppa_log'),print_r($patterns, true));
         
         if ($this->version() > 0) { // Laravel
         	foreach ($patterns as $i=>$pattern)

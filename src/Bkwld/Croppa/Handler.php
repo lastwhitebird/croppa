@@ -61,7 +61,6 @@ class Handler extends Controller {
 				$indexfound = $i;
 				break;
 			}
-		file_put_contents(storage_path('croppa_log'),print_r($request, true).'#'.print_r($indexfound , true));
 		$this->config['path']=$this->config['path'][$indexfound];
     	$this->config['src_dir']=$this->config['src_dir'][$indexfound];
     	$this->config['crops_dir']=$this->config['crops_dir'][$indexfound];
